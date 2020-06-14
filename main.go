@@ -85,7 +85,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	req.Header.Set("Authorization", "Token " + key)
+	if key != "" {
+		req.Header.Set("Authorization", "Token " + key)
+	}
+
 	req.Header.Set("Content-Type", m.FormDataContentType())
 
 	c := &http.Client{Timeout: 15 * time.Second}
