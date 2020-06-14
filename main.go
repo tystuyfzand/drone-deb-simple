@@ -61,7 +61,7 @@ func main() {
 
 		fmt.Println("Attaching file " + file)
 
-		fw, err := m.CreateFormFile("file_" + strconv.Itoa(i), f.Name())
+		fw, err := m.CreateFormFile("file_"+strconv.Itoa(i), f.Name())
 
 		if err != nil {
 			fmt.Println("Unable to create file part:", err)
@@ -86,7 +86,7 @@ func main() {
 	}
 
 	if key != "" {
-		req.Header.Set("Authorization", "Token " + key)
+		req.Header.Set("Authorization", "Token "+key)
 	}
 
 	req.Header.Set("Content-Type", m.FormDataContentType())
@@ -99,9 +99,18 @@ func main() {
 		return
 	}
 
-	if res.StatusCode != http.StatusOK {
+	defer res.Body.Close()
+
+	bb, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		fmt.Println("Unable to read response body:", err)
+		os.Exit(1)
+	}
+
+	if res.StatusCode != http.StatusCreated {
 		// Log error
-		fmt.Println("Unable to upload packages:", err)
+		fmt.Println("Unable to upload packages due to invalid error code:", res.StatusCode, string(bb))
 		os.Exit(1)
 	}
 }
